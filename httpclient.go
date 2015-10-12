@@ -12,6 +12,7 @@ package httpclient
 
 import (
 	"crypto/tls"
+	"errors"
 	"io"
 	"net"
 	"net/http"
@@ -99,6 +100,14 @@ type Transport struct {
 	// Write operation on the request connection.
 	ReadWriteTimeout time.Duration
 
+	// TcpWriteBufferSize, the size of the operating system's write
+	// buffer associated with the connection.
+	TcpWriteBufferSize int
+
+	// TcpReadBuffserSize, the size of the operating system's read
+	// buffer associated with the connection.
+	TcpReadBuffserSize int
+
 	starter   sync.Once
 	transport *http.Transport
 }
@@ -114,6 +123,24 @@ func (t *Transport) lazyStart() {
 			c, err := net.DialTimeout(netw, addr, t.ConnectTimeout)
 			if err != nil {
 				return nil, err
+			}
+
+			if t.TcpReadBuffserSize != 0 || t.TcpWriteBufferSize != 0 {
+				if tcpCon, ok := c.(*net.TCPConn); ok {
+					if t.TcpWriteBufferSize != 0 {
+						if err = tcpCon.SetWriteBuffer(t.TcpWriteBufferSize); err != nil {
+							return nil, err
+						}
+					}
+					if t.TcpReadBuffserSize != 0 {
+						if err = tcpCon.SetReadBuffer(t.TcpReadBuffserSize); err != nil {
+							return nil, err
+						}
+					}
+				} else {
+					err = errors.New("Not Tcp Connection")
+					return nil, err
+				}
 			}
 
 			if t.ReadWriteTimeout > 0 {
