@@ -112,8 +112,8 @@ func TestHttpClient(t *testing.T) {
 		ConnectTimeout:     1 * time.Second,
 		RequestTimeout:     5 * time.Second,
 		ReadWriteTimeout:   3 * time.Second,
-		TcpWriteBufferSize: 64 * 1024,
-		TcpReadBuffserSize: 64 * 1024,
+		TCPWriteBufferSize: 64 * 1024,
+		TCPReadBufferSize:  64 * 1024,
 	}
 	client := &http.Client{Transport: transport}
 

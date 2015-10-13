@@ -100,13 +100,13 @@ type Transport struct {
 	// Write operation on the request connection.
 	ReadWriteTimeout time.Duration
 
-	// TcpWriteBufferSize, the size of the operating system's write
+	// TCPWriteBufferSize, the size of the operating system's write
 	// buffer associated with the connection.
-	TcpWriteBufferSize int
+	TCPWriteBufferSize int
 
-	// TcpReadBuffserSize, the size of the operating system's read
+	// TCPReadBuffserSize, the size of the operating system's read
 	// buffer associated with the connection.
-	TcpReadBuffserSize int
+	TCPReadBufferSize int
 
 	starter   sync.Once
 	transport *http.Transport
@@ -125,15 +125,15 @@ func (t *Transport) lazyStart() {
 				return nil, err
 			}
 
-			if t.TcpReadBuffserSize != 0 || t.TcpWriteBufferSize != 0 {
+			if t.TCPReadBufferSize != 0 || t.TCPWriteBufferSize != 0 {
 				if tcpCon, ok := c.(*net.TCPConn); ok {
-					if t.TcpWriteBufferSize != 0 {
-						if err = tcpCon.SetWriteBuffer(t.TcpWriteBufferSize); err != nil {
+					if t.TCPWriteBufferSize != 0 {
+						if err = tcpCon.SetWriteBuffer(t.TCPWriteBufferSize); err != nil {
 							return nil, err
 						}
 					}
-					if t.TcpReadBuffserSize != 0 {
-						if err = tcpCon.SetReadBuffer(t.TcpReadBuffserSize); err != nil {
+					if t.TCPReadBufferSize != 0 {
+						if err = tcpCon.SetReadBuffer(t.TCPReadBufferSize); err != nil {
 							return nil, err
 						}
 					}
